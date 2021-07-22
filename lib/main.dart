@@ -15,6 +15,7 @@ import 'Store/storehome.dart';
 Future<void> main() async
 {
   WidgetsFlutterBinding.ensureInitialized();
+  AppConfig.auth = FirebaseAuth.instance;
 
   runApp(MyApp());
 }
@@ -40,16 +41,52 @@ class SplashScreen extends StatefulWidget {
 
 
 class _SplashScreenState extends State<SplashScreen>
+
 {
+
+  @override
+  void initState() {
+    super.initState();
+    displaySplashScreen();
+  }
+
+  displaySplashScreen(){
+
+    Timer(Duration(seconds: 5), () async{
+      if(await AppConfig.auth.currentUser() != null) {
+        Route route = MaterialPageRoute(builder: (_) => StoreHome());
+        Navigator.pushReplacement(context, route);
+      } else {
+        Route route = MaterialPageRoute(builder: (_) => AuthenticScreen());
+        Navigator.pushReplacement(context, route);
+      }
+    });
+
+  }
+
+
   @override
   Widget build(BuildContext context) {
+    SizeConfig().init(context);
     return Material(
-      child: Center(
-        child: Text(
-            "Welcome to Flutter Firetore eCommerce Course by Coding Cafe.",
-          style: TextStyle(color: Colors.green, fontSize: 20.0),
-          textAlign: TextAlign.center,
+      child: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [AppConfig.primaryColor, AppConfig.secondaryColor],
+            begin: const FractionalOffset(0.0, 0.0),
+            end: const FractionalOffset(1.0, 0.0),
+            tileMode: TileMode.clamp,
+          ),
         ),
+        child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Image.asset(AppConstants.welcomeScreenImage),
+                SizedBox(height: SizeConfig.blockSizeHorizontal * 10,),
+                Text(AppConstants.brandTagLine, style: TextStyle(color: Colors.white, fontSize: SizeConfig.fontSize * 5), ),
+              ],
+            )),
       ),
     );
   }
