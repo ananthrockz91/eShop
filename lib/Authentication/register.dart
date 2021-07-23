@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:e_shop/Widgets/customTextField.dart';
 import 'package:e_shop/DialogBox/errorDialog.dart';
 import 'package:e_shop/DialogBox/loadingDialog.dart';
@@ -26,6 +27,7 @@ class _RegisterState extends State<Register> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   String userImageUrl = "";
   File _imageFile;
+  final imagePicker = ImagePicker();
 
   @override
   Widget build(BuildContext context) {
@@ -69,27 +71,21 @@ class _RegisterState extends State<Register> {
                     data: Icons.person,
                     hintText: "Name",
                   ),
-                  SizedBox(
-                    height: SizeConfig.blockSizeVertical * 1,
-                  ),
+
                   CustomTextField(
                     isObsecure: false,
                     controller: emailTextEditingController,
                     data: Icons.email,
                     hintText: "Email",
                   ),
-                  SizedBox(
-                    height: SizeConfig.blockSizeVertical * 1,
-                  ),
+
                   CustomTextField(
                     isObsecure: true,
                     controller: passwordTextEditingController,
                     data: Icons.lock,
                     hintText: "Password",
                   ),
-                  SizedBox(
-                    height: SizeConfig.blockSizeVertical * 1,
-                  ),
+
                   CustomTextField(
                     isObsecure: true,
                     controller: cPasswordTextEditingController,
@@ -133,12 +129,14 @@ class _RegisterState extends State<Register> {
   }
 
   Future<void> selectAndPicImage() async {
-    ImagePicker imagePicker;
-    PickedFile pickedFile;
+
+    var pickedFile = PickedFile('');
 
     pickedFile = await imagePicker.getImage(source: ImageSource.gallery);
 
-    _imageFile = File(pickedFile.path);
+    setState(() {
+      _imageFile = File(pickedFile.path);
+    });
   }
 
   Future<void> uploadAndSaveImage() async {
@@ -166,7 +164,7 @@ class _RegisterState extends State<Register> {
         context: context,
         builder: (c) {
           return LoadingAlertDialog(
-            message: "Authenticating, Please wait.....",
+            message: "Registering, Please wait.....",
           );
         });
 
@@ -181,7 +179,9 @@ class _RegisterState extends State<Register> {
 
     await taskSnapshot.ref.getDownloadURL().then((url) {
       userImageUrl = url;
+
     });
+    registerUser();
   }
 
   displayError({String message}) {
@@ -213,5 +213,30 @@ class _RegisterState extends State<Register> {
         }
       );
     });
+
+    if(fireBaseUser != null) {
+      saveDataToFirestore(fireBaseUser).then((value){
+        Navigator.pop(context);
+        Route route = MaterialPageRoute(builder: (context) => StoreHome());
+        Navigator.pushReplacement(context, route);
+      });
+    }
+  }
+
+  Future saveDataToFirestore (FirebaseUser fUser) async{
+    Firestore.instance.collection(AppConfig.collectionUser).document(fUser.uid).setData({
+      AppConfig.userUID: fUser.uid,
+      AppConfig.userEmail: fUser.email,
+      AppConfig.userName: nameTextEditingController.text.trim(),
+      AppConfig.userAvatarUrl: userImageUrl,
+      AppConfig.userCartList: ["garbageValue"],
+    });
+
+    await AppConfig.sharedPreferences.setString(AppConfig.userUID, fUser.uid);
+    await AppConfig.sharedPreferences.setString(AppConfig.userEmail, fUser.email);
+    await AppConfig.sharedPreferences.setString(AppConfig.userName, nameTextEditingController.text.trim());
+    await AppConfig.sharedPreferences.setString(AppConfig.userAvatarUrl, userImageUrl);
+    await AppConfig.sharedPreferences.setStringList(AppConfig.userCartList, ["garbageValue"]);
+
   }
 }

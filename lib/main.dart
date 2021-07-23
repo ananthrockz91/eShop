@@ -16,6 +16,8 @@ Future<void> main() async
 {
   WidgetsFlutterBinding.ensureInitialized();
   AppConfig.auth = FirebaseAuth.instance;
+  AppConfig.sharedPreferences = await SharedPreferences.getInstance();
+  AppConfig.firestore = Firestore.instance;
 
   runApp(MyApp());
 }

@@ -38,6 +38,8 @@ class AppConstants {
   //image size should be 1000 * 600
   static String welcomeScreenImage = "images/welcome.png";
   static String brandTagLine = "World's best shopping app";
+
+
 }
 
 class AppFont {
