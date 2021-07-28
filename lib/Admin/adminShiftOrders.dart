@@ -16,6 +16,7 @@ class _MyOrdersState extends State<AdminShiftOrders> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
+      child: Text(''),
     );
   }
 }

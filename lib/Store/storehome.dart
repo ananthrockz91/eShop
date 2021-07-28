@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:e_shop/Authentication/authenication.dart';
 import 'package:e_shop/Store/cart.dart';
 import 'package:e_shop/Store/product_page.dart';
 import 'package:e_shop/Counters/cartitemcounter.dart';
@@ -57,20 +58,38 @@ class _StoreHomeState extends State<StoreHome> {
                       Navigator.pushReplacement(context, route);
                     },
                   ),
+                  IconButton(
+                    icon: Icon(Icons.shopping_cart, color: Colors.pink,),
+                    onPressed: (){
+                      AppConfig.auth.signOut().then((c){
+                        Route route = MaterialPageRoute(builder: (context) => AuthenticScreen());
+                        Navigator.pushReplacement(context, route);
+                      });
+                    },
+                  ),
                   Align(
                     alignment: Alignment.topLeft,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.green,
-                        shape: BoxShape.circle,
-                      ),
-                      child: Text('0'),
+                    child: Stack(
+                      children: [
+                        Icon(Icons.brightness_1, size: 20, color: Colors.green,),
+                        Consumer<CartItemCounter>(
+                          builder: (context, counter, _){
+                            return Padding(
+                              padding: const EdgeInsets.all(4.0),
+                              child: Text(counter.count.toString(), style: TextStyle(color: Colors.white),),
+                            );
+                          },
+                        ),
+
+                      ],
                     ),
                   ),
+
                 ],
               ),
             ],
           ),
+          drawer: MyDrawer(),
       ),
     );
   }
