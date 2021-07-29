@@ -22,6 +22,7 @@ class _SearchProductState extends State<SearchProduct> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
+      child: Text(''),
     );
   }
 }

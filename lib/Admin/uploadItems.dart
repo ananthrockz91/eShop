@@ -317,7 +317,7 @@ class _UploadPageState extends State<UploadPage>
       "title": titleTextEditingController.text.trim(),
       "shortInfo": shortInfoTextEditingController.text.trim(),
       "longDescription": descriptionTextEditingController.text.trim(),
-      "price": priceTextEditingController.text.trim(),
+      "price": int.parse(priceTextEditingController.text.trim()),
       "publishedDate": DateTime.now(),
       "thumbnailUrl": downloadUrl,
       "status": "available",
