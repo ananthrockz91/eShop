@@ -212,7 +212,7 @@ Widget sourceInfo(ItemModel model, BuildContext context,
                 ),
                 Flexible(
                     child: Container(
-
+                        color: Colors.white,
 
                 )),
                 Align(
